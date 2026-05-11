@@ -370,25 +370,33 @@ function submitFinal(){
     const dataAuth = document.querySelector('input[name="data"]:checked');
     if(!dataAuth){alert("请选择数据使用授权选项");return}
     
-    // 基本信息
     const gender = document.querySelector('input[name="gender"]:checked')?.value;
     const age = document.getElementById("age").value;
     const major = document.querySelector('input[name="major"]:checked')?.value;
     const mbtiExp = document.querySelector('input[name="mbti"]:checked')?.value;
     const beliefScore = document.querySelector('input[name="q_belief"]:checked')?.value;
     const judgeType = document.querySelector('input[name="judge"]:checked')?.value;
-    
-    // 后测赋分
     const post1 = document.querySelector('input[name="post1"]:checked')?.value;
     const post2 = document.querySelector('input[name="post2"]:checked')?.value;
     const post3 = document.querySelector('input[name="post3"]:checked')?.value;
     const post4 = document.querySelector('input[name="post4"]:checked')?.value;
     
-    // 正式题答案
     let formalAnswers = [];
     for(let i=1;i<=20;i++){
         formalAnswers.push(document.querySelector(`input[name="fq${i}"]:checked`)?.value);
     }
+    
+    const result = `【FBTI数据】性别=${gender}，年龄=${age}，专业=${major}，MBTI经验=${mbtiExp}，信念分=${beliefScore}，判断=${judgeType}，后测=${post1},${post2},${post3},${post4}，授权=${dataAuth.value}`;
+
+    localStorage.setItem("AUTO_SUBMIT_FBTI", result);
+
+    document.getElementById("experimentData").innerText = result;
+    document.getElementById("finalSubmitBtn").disabled = true;
+    document.getElementById("finishTip").style.display = "block";
+    document.getElementById("dataPanel").style.display = "block";
+
+    alert("提交成功！请打开 data.html 后台查看数据！");
+}
     
     // 组装数据
     const result = `
