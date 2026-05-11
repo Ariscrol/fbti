@@ -9,7 +9,11 @@
     body{background:linear-gradient(135deg,#f0f4ff,#eef2ff);margin:0;padding:15px;min-height:100vh}
     .container{max-width:720px;margin:30px auto;background:#fff;border-radius:16px;padding:35px;box-shadow:0 8px 25px rgba(0,0,0,0.08)}
     .page{display:none}
-    .page.active{display:block}
+    .page.active{display:block;animation:fadeIn 0.5s ease}
+    @keyframes fadeIn {
+        from {opacity:0;transform:translateY(10px)}
+        to {opacity:1;transform:translateY(0)}
+    }
     .btn{
         background:linear-gradient(90deg,#4f46e5,#6366f1);
         color:white;border:none;border-radius:12px;
@@ -18,7 +22,7 @@
         transition:0.2s;
     }
     .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(79,70,229,0.2)}
-    .btn:disabled{background:#ccc;transform:none}
+    .btn:disabled{background:#ccc;transform:none;cursor:not-allowed;box-shadow:none}
     .question{margin:20px 0;padding:12px 0}
     .q-title{font-weight:bold;margin-bottom:12px;color:#222;font-size:15px;line-height:1.6}
     .options{
@@ -26,6 +30,7 @@
         justify-content:space-between;
         width:100%;
         margin-top:10px;
+        flex-wrap:wrap;
     }
     .options label{
         flex:1;
@@ -36,7 +41,8 @@
         cursor:pointer;
         transition:0.2s;
         background:#fafafa;
-        margin:0 4px;
+        margin:0 4px 8px;
+        min-width:80px;
     }
     .options input{display:none}
     .options input:checked+label{
@@ -45,7 +51,11 @@
     }
     input[type=number]{
         width:100%;padding:11px;border:1px solid #e0e0e0;
-        border-radius:10px;font-size:15px
+        border-radius:10px;font-size:15px;
+    }
+    input[type=number]:focus, .options input:checked+label:focus{
+        outline:2px solid rgba(79,70,229,0.3);
+        outline-offset:2px;
     }
     .loading{text-align:center;padding:50px 0}
     .spinner{
@@ -57,21 +67,36 @@
     .report{
         background:#f8faff;padding:25px;border-radius:14px;
         line-height:1.8;margin:25px 0;color:#222;
-        border-left:5px solid #4f46e5
+        border-left:5px solid #4f46e5;
+        animation:slideIn 0.8s ease;
+    }
+    @keyframes slideIn {
+        from {opacity:0;transform:translateX(-10px)}
+        to {opacity:1;transform:translateX(0)}
     }
     .title{
         text-align:center;font-size:22px;font-weight:bold;
         margin-bottom:25px;color:#1f2937;
-        display:flex;align-items:center;justify-content:center;gap:8px
+        display:flex;align-items:center;justify-content:center;gap:8px;
+        flex-wrap:wrap;
     }
     .consent p{line-height:1.8;color:#333;margin:10px 0}
     .emoji{font-size:20px}
     .success{color:#10b981}
-    .tip{color:#6b7280;font-size:14px;margin-top:6px}
+    .tip{color:#6b7280;font-size:14px;margin-top:6px;line-height:1.6}
     .data-box{
         background:#f9fafb;padding:20px;border-radius:12px;
         margin-top:20px;font-family:monospace;font-size:14px;
-        white-space:pre-line;line-height:1.6
+        white-space:pre-line;line-height:1.6;
+        max-height:400px;
+        overflow-y:auto;
+    }
+    @media (max-width: 480px) {
+        .container{padding:20px;margin:15px auto}
+        .title{font-size:18px}
+        .q-title{font-size:14px}
+        .btn{padding:12px 16px;font-size:15px}
+        .options label{padding:8px 4px;font-size:14px}
     }
 </style>
 </head>
@@ -112,7 +137,7 @@
     </div>
     <div class="question">
         <div class="q-title">2. 年龄</div>
-        <input type="number" id="age" placeholder="请输入年龄">
+        <input type="number" id="age" placeholder="请输入年龄" min="1" max="120">
     </div>
     <div class="question">
         <div class="q-title">3. 专业</div>
@@ -149,7 +174,7 @@
     <button class="btn" onclick="nextPage(2)">下一步</button>
 </div>
 
-<!-- 3 正式20题（完全按文档还原） -->
+<!-- 3 正式20题 -->
 <div class="page" id="page3">
     <div class="title"><span class="emoji">🧩</span> FBTI 人格测试</div>
     <div id="formalQuestions"></div>
@@ -172,7 +197,7 @@
     </div>
 </div>
 
-<!-- 5 后测（赋分+完整文本） -->
+<!-- 5 后测 -->
 <div class="page" id="page5">
     <div class="title"><span class="emoji">⭐</span> 报告评价</div>
     <p class="tip">1=完全不准确/不适用/不独特/不是专门生成 | 5=非常准确/适用/独特/专门生成</p>
@@ -219,7 +244,7 @@
     <button class="btn" onclick="nextPage(5)">继续</button>
 </div>
 
-<!-- 6 揭秘 + 数据提交 + 数据面板 -->
+<!-- 6 揭秘 + 数据提交 -->
 <div class="page" id="page6">
     <div class="title"><span class="emoji">🔍</span> 实验揭秘与感谢</div>
     <p style="line-height:1.8">🎉 感谢您完成实验！</p>
@@ -242,62 +267,37 @@
         ✅ 提交成功！
     </p>
 
-    <!-- 主试数据收集面板（自动赋分+一键复制） -->
     <div id="dataPanel" style="display:none;margin-top:30px">
-        <h3>📊 实验数据（主试专用）</h3>
+        <h3>📊 实验数据</h3>
         <div class="data-box" id="experimentData"></div>
-        <button class="btn" style="background:#10b981" onclick="copyData()">复制数据</button>
     </div>
 </div>
 
 </div>
 
 <script>
-// 正式20题 —— 完全按文档逐题还原
 const formalItems = [
-    "我很明了本测验的说明",
-    "我有能力应付各种困难",
-    "即使是关在铁笼里的猛兽，我见了也会惴惴不安",
-    "我不擅长说笑话、讲趣事",
-    "当我看到亲友邻居争执时，我总是",
-    "在社交场合中，我",
-    "我的思想似乎",
-    "我做事严格，力求把事情办得尽善尽美",
-    "在处理问题时，我比较",
-    "在需要当机立断时，我总是",
-    "我善于控制我的表情",
-    "我宁愿做一个",
-    "我不论到什么地方，都能清楚辨别方向",
-    "我热爱我所学的专业和所从事的工作",
-    "我擅长解决难题",
-    "在就寝时，我常常",
-    "有人烦扰我时，我",
-    "我总是把是非善恶作为处理问题的原则",
-    "我单独跟异性谈话时，总显得不自然",
-    "我在待人接物方面，的确不太成功"
+    "我很明了本测验的说明","我有能力应付各种困难","即使是关在铁笼里的猛兽，我见了也会惴惴不安",
+    "我不擅长说笑话、讲趣事","当我看到亲友邻居争执时，我总是","在社交场合中，我",
+    "我的思想似乎","我做事严格，力求把事情办得尽善尽美","在处理问题时，我比较",
+    "在需要当机立断时，我总是","我善于控制我的表情","我宁愿做一个",
+    "我不论到什么地方，都能清楚辨别方向","我热爱我所学的专业和所从事的工作","我擅长解决难题",
+    "在就寝时，我常常","有人烦扰我时，我","我总是把是非善恶作为处理问题的原则",
+    "我单独跟异性谈话时，总显得不自然","我在待人接物方面，的确不太成功"
 ];
 const formalOptions = [
-    ["A. 是的","B. 不一定","C. 不是的"],
-    ["A. 是的","B. 不一定","C. 不是的"],
-    ["A. 是的","B. 不一定","C. 不是的"],
-    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
-    ["A. 任其自己解决","B. 介于 A、C 之间","C. 予以劝解"],
-    ["A. 谈吐自然","B. 介于 A、C 之间","C. 退避三舍，保持沉默"],
-    ["A. 比较先进","B. 一般","C. 比较保守"],
-    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
-    ["A. 理智","B. 介于 A、C 之间","C. 情感用事"],
-    ["A. 镇静地运用理智","B. 介于 A、C 之间","C. 常常紧张兴奋"],
-    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
-    ["A. 化学研究者","B. 不确定","C. 旅行社经理"],
-    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
-    ["A. 是的","B. 不一定","C. 不是的"],
-    ["A. 是的","B. 不一定","C. 不是的"],
-    ["A. 不易入睡","B. 介于 A、C 之间","C. 极易入睡"],
-    ["A. 能不露声色","B. 介于 A、C 之间","C. 总要说给别人听以泄愤怒"],
-    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
-    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
+    ["A. 是的","B. 不一定","C. 不是的"],["A. 是的","B. 不一定","C. 不是的"],["A. 是的","B. 不一定","C. 不是的"],
+    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],["A. 任其自己解决","B. 介于 A、C 之间","C. 予以劝解"],
+    ["A. 谈吐自然","B. 介于 A、C 之间","C. 退避三舍，保持沉默"],["A. 比较先进","B. 一般","C. 比较保守"],
+    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],["A. 理智","B. 介于 A、C 之间","C. 情感用事"],
+    ["A. 镇静地运用理智","B. 介于 A、C 之间","C. 常常紧张兴奋"],["A. 是的","B. 介于 A、C 之间","C. 不是的"],
+    ["A. 化学研究者","B. 不确定","C. 旅行社经理"],["A. 是的","B. 介于 A、C 之间","C. 不是的"],
+    ["A. 是的","B. 不一定","C. 不是的"],["A. 是的","B. 不一定","C. 不是的"],
+    ["A. 不易入睡","B. 介于 A、C 之间","C. 极易入睡"],["A. 能不露声色","B. 介于 A、C 之间","C. 总要说给别人听以泄愤怒"],
+    ["A. 是的","B. 介于 A、C 之间","C. 不是的"],["A. 是的","B. 介于 A、C 之间","C. 不是的"],
     ["A. 是的","B. 不完全这样","C. 不是的"]
 ];
+
 const formalEl = document.getElementById("formalQuestions");
 formalItems.forEach((item,i)=>{
     const idx = i+1;
@@ -314,19 +314,19 @@ formalItems.forEach((item,i)=>{
     formalEl.innerHTML += html;
 });
 
-// 分页逻辑
 let currentPage = 1;
 function showPage(n){
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.getElementById("page"+n).classList.add("active");
     currentPage = n;
+    window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function nextPage(from){
     if(from === 1){
         const c = document.querySelector('input[name="consent"]:checked');
-        if(!c){alert("请选择是否同意参加");return}
-        if(c.value==="no"){alert("感谢关注，您已选择不参加");return}
+        if(!c){alert("请选择是否同意参加");return;}
+        if(c.value==="no"){alert("感谢参与");return;}
         showPage(2);
     }
     if(from === 2){
@@ -336,40 +336,35 @@ function nextPage(from){
         const mb = document.querySelector('input[name="mbti"]:checked');
         const b = document.querySelector('input[name="q_belief"]:checked');
         const j = document.querySelector('input[name="judge"]:checked');
-        if(!g || !a || !m || !mb || !b || !j){alert("请完成所有基本信息");return}
+        if(!g||!a||!m||!mb||!b||!j){alert("请完成所有基本信息");return;}
         showPage(3);
     }
     if(from === 3){
         let ok = true;
-        for(let i=1;i<=20;i++){
-            if(!document.querySelector('input[name="fq'+i+'"]:checked')) ok=false;
-        }
-        if(!ok){alert("请完成全部20道题目");return}
+        for(let i=1;i<=20;i++){if(!document.querySelector('input[name="fq'+i+'"]:checked'))ok=false;}
+        if(!ok){alert("请完成全部20题");return;}
         showPage(4);
-        // 加载延长到 2.5 秒（原2秒+0.5秒）
         setTimeout(()=>{
             document.getElementById("loadingSection").style.display="none";
             document.getElementById("reportSection").style.display="block";
         },2500);
     }
-    if(from === 4){
-        showPage(5);
-    }
+    if(from === 4){showPage(5);}
     if(from === 5){
         const p1=document.querySelector('input[name="post1"]:checked');
         const p2=document.querySelector('input[name="post2"]:checked');
         const p3=document.querySelector('input[name="post3"]:checked');
         const p4=document.querySelector('input[name="post4"]:checked');
-        if(!p1||!p2||!p3||!p4){alert("请完成所有评价题目");return}
+        if(!p1||!p2||!p3||!p4){alert("请完成所有评价");return;}
         showPage(6);
     }
 }
 
-// 最终提交 + 自动收集所有数据
+// ✅ 修复版：自动传数据到后台，不破坏页面
 function submitFinal(){
     const dataAuth = document.querySelector('input[name="data"]:checked');
-    if(!dataAuth){alert("请选择数据使用授权选项");return}
-    
+    if(!dataAuth){alert("请选择授权选项");return;}
+
     const gender = document.querySelector('input[name="gender"]:checked')?.value;
     const age = document.getElementById("age").value;
     const major = document.querySelector('input[name="major"]:checked')?.value;
@@ -380,14 +375,10 @@ function submitFinal(){
     const post2 = document.querySelector('input[name="post2"]:checked')?.value;
     const post3 = document.querySelector('input[name="post3"]:checked')?.value;
     const post4 = document.querySelector('input[name="post4"]:checked')?.value;
-    
-    let formalAnswers = [];
-    for(let i=1;i<=20;i++){
-        formalAnswers.push(document.querySelector(`input[name="fq${i}"]:checked`)?.value);
-    }
-    
+
     const result = `【FBTI数据】性别=${gender}，年龄=${age}，专业=${major}，MBTI经验=${mbtiExp}，信念分=${beliefScore}，判断=${judgeType}，后测=${post1},${post2},${post3},${post4}，授权=${dataAuth.value}`;
 
+    // ✅ 自动发给 data.html
     localStorage.setItem("AUTO_SUBMIT_FBTI", result);
 
     document.getElementById("experimentData").innerText = result;
@@ -395,38 +386,7 @@ function submitFinal(){
     document.getElementById("finishTip").style.display = "block";
     document.getElementById("dataPanel").style.display = "block";
 
-    alert("提交成功！请打开 data.html 后台查看数据！");
-}
-    
-    // 组装数据
-    const result = `
-【FBTI实验数据】
-性别：${gender}
-年龄：${age}
-专业：${major}
-MBTI经验：${mbtiExp}
-测验信念分(1-5)：${beliefScore}
-判断倾向：${judgeType}
-后测1(准确性)：${post1}
-后测2(适用性)：${post2}
-后测3(独特性)：${post3}
-后测4(专属度)：${post4}
-数据授权：${dataAuth.value}
-正式题答案：${formalAnswers.join(' | ')}
-    `;
-    
-    document.getElementById("experimentData").innerText = result;
-    document.getElementById("finalSubmitBtn").disabled = true;
-    document.getElementById("finishTip").style.display = "block";
-    document.getElementById("dataPanel").style.display = "block";
-}
-
-// 复制数据
-function copyData(){
-    const text = document.getElementById("experimentData").innerText;
-    navigator.clipboard.writeText(text).then(()=>{
-        alert("已复制到剪贴板，可直接粘贴到Excel/表格");
-    });
+    alert("提交成功！打开 data.html 即可查看数据！");
 }
 </script>
 </body>
