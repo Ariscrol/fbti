@@ -88,7 +88,8 @@
         -webkit-appearance:none; /* 修复iOS输入框默认样式 */
         appearance:none;
     }
-    .loading{text-align:center;padding:50px 0}
+    .loading{text-align:center;padding:50px 0;-webkit-transition:opacity 0.4s ease;transition:opacity 0.4s ease;opacity:1}
+    .loading.fade-out{opacity:0}
     .spinner{
         width:50px;height:50px;border:5px solid #f0f0f0;
         border-top:5px solid #4f46e5;border-radius:50%;
@@ -101,6 +102,18 @@
         background:#f8faff;padding:25px;border-radius:14px;
         line-height:1.8;margin:25px 0;color:#222;
         border-left:5px solid #4f46e5
+    }
+    #reportSection{
+        opacity:0;
+        -webkit-transition:opacity 0.6s ease, transform 0.6s ease;
+        transition:opacity 0.6s ease, transform 0.6s ease;
+        transform:translateY(20px);
+        -webkit-transform:translateY(20px);
+    }
+    #reportSection.show{
+        opacity:1;
+        transform:translateY(0);
+        -webkit-transform:translateY(0);
     }
     .title{
         text-align:center;font-size:22px;font-weight:bold;
@@ -416,8 +429,20 @@ function nextPage(from){
         showPage(4);
         // 加载延长到 2.5 秒（原2秒+0.5秒）
         setTimeout(function(){
-            document.getElementById("loadingSection").style.display="none";
-            document.getElementById("reportSection").style.display="block";
+            var loadingSection = document.getElementById("loadingSection");
+            var reportSection = document.getElementById("reportSection");
+            
+            // 先淡出加载页
+            loadingSection.classList.add("fade-out");
+            
+            // 等待淡出完成后，显示报告页并淡入
+            setTimeout(function(){
+                loadingSection.style.display="none";
+                reportSection.style.display="block";
+                // 强制重绘，确保过渡效果生效
+                reportSection.offsetHeight;
+                reportSection.classList.add("show");
+            }, 400);
         },2500);
     }
     if(from === 4){
