@@ -6,7 +6,9 @@
 <title>✨ FBTI 人格测评实验</title>
 <style>
     *{box-sizing:border-box;font-family:"Microsoft YaHei", "Heiti SC", sans-serif;-webkit-box-sizing:border-box;box-sizing:border-box}
-    body{background:-webkit-linear-gradient(135deg,#f0f4ff,#eef2ff);background:linear-gradient(135deg,#f0f4ff,#eef2ff);margin:0;padding:15px;min-height:100vh;-webkit-font-smoothing:antialiased;}
+    body{background:-webkit-linear-gradient(135deg,#667eea 0%,#764ba2 50%,#00d4ff 100%);background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#00d4ff 100%);margin:0;padding:15px;min-height:100vh;-webkit-font-smoothing:antialiased;background-size:200% 200%;-webkit-animation:gradientShift 15s ease infinite;animation:gradientShift 15s ease infinite;}
+    @-webkit-keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     .container{max-width:720px;margin:30px auto;background:#fff;border-radius:16px;padding:35px;-webkit-box-shadow:0 8px 25px rgba(0,0,0,0.08);box-shadow:0 8px 25px rgba(0,0,0,0.08);}
     .page{
         display:none;
@@ -115,6 +117,38 @@
         transform:translateY(0);
         -webkit-transform:translateY(0);
     }
+    .progress-container{
+        width:100%;
+        height:6px;
+        background:#e0e7ff;
+        border-radius:3px;
+        overflow:hidden;
+        margin-bottom:25px;
+        -webkit-box-shadow:inset 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow:inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .progress-bar{
+        height:100%;
+        background:-webkit-linear-gradient(90deg,#667eea,#764ba2,#00d4ff);
+        background:linear-gradient(90deg,#667eea,#764ba2,#00d4ff);
+        border-radius:3px;
+        width:0;
+        -webkit-transition:width 0.5s ease;
+        transition:width 0.5s ease;
+        position:relative;
+        background-size:200% 100%;
+        -webkit-animation:progressGlow 2s ease infinite;
+        animation:progressGlow 2s ease infinite;
+    }
+    @-webkit-keyframes progressGlow{0%,100%{-webkit-box-shadow:0 0 5px rgba(102,126,234,0.5);box-shadow:0 0 5px rgba(102,126,234,0.5)}50%{-webkit-box-shadow:0 0 15px rgba(102,126,234,0.8);box-shadow:0 0 15px rgba(102,126,234,0.8)}}
+    @keyframes progressGlow{0%,100%{-webkit-box-shadow:0 0 5px rgba(102,126,234,0.5);box-shadow:0 0 5px rgba(102,126,234,0.5)}50%{-webkit-box-shadow:0 0 15px rgba(102,126,234,0.8);box-shadow:0 0 15px rgba(102,126,234,0.8)}}
+    .progress-text{
+        text-align:center;
+        font-size:13px;
+        color:#6b7280;
+        margin-bottom:15px;
+        font-weight:500;
+    }
     .title{
         text-align:center;font-size:22px;font-weight:bold;
         margin-bottom:25px;color:#1f2937;
@@ -144,6 +178,11 @@
 </head>
 <body>
 <div class="container">
+    <!-- 进度条 -->
+    <div class="progress-text" id="progressText">问卷进度：1/3</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
 
 <!-- 1 知情同意 -->
 <div class="page active" id="page1">
@@ -400,7 +439,42 @@ function showPage(n){
             next.classList.add("active");
         }
         currentPage = n;
+        
+        // 更新进度条（只在等待页之前显示）
+        updateProgress(n);
     }, 300);
+}
+
+// 更新进度条
+function updateProgress(pageNum){
+    var progressText = document.getElementById("progressText");
+    var progressBar = document.getElementById("progressBar");
+    
+    // 总共3个步骤：知情同意、基本信息、正式测试
+    var totalSteps = 3;
+    var currentStep = Math.min(pageNum, totalSteps);
+    
+    // 更新进度百分比
+    var percentage = (currentStep / totalSteps) * 100;
+    
+    // 更新进度条
+    if(progressBar) {
+        progressBar.style.width = percentage + "%";
+    }
+    
+    // 更新进度文字
+    if(progressText) {
+        progressText.textContent = "问卷进度：" + currentStep + "/" + totalSteps;
+    }
+    
+    // 在等待页和结果页隐藏进度条
+    if(pageNum >= 4){
+        if(progressText) progressText.style.display = "none";
+        if(document.querySelector(".progress-container")) document.querySelector(".progress-container").style.display = "none";
+    } else {
+        if(progressText) progressText.style.display = "block";
+        if(document.querySelector(".progress-container")) document.querySelector(".progress-container").style.display = "block";
+    }
 }
 
 function nextPage(from){
@@ -554,6 +628,21 @@ function fallbackCopyTextToClipboard(text) {
     }
     document.body.removeChild(textArea);
 }
+
+// 页面加载完成后初始化进度条
+window.addEventListener('load', function(){
+    var progressBar = document.getElementById("progressBar");
+    var progressText = document.getElementById("progressText");
+    
+    if(progressBar) {
+        // 初始进度：第1页（知情同意）
+        progressBar.style.width = "33.33%";
+    }
+    
+    if(progressText) {
+        progressText.textContent = "问卷进度：1/3";
+    }
+});
 </script>
 </body>
 </html>
