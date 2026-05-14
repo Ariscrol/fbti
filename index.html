@@ -8,8 +8,25 @@
     *{box-sizing:border-box;font-family:"Microsoft YaHei", "Heiti SC", sans-serif;-webkit-box-sizing:border-box;box-sizing:border-box}
     body{background:-webkit-linear-gradient(135deg,#f0f4ff,#eef2ff);background:linear-gradient(135deg,#f0f4ff,#eef2ff);margin:0;padding:15px;min-height:100vh;-webkit-font-smoothing:antialiased;}
     .container{max-width:720px;margin:30px auto;background:#fff;border-radius:16px;padding:35px;-webkit-box-shadow:0 8px 25px rgba(0,0,0,0.08);box-shadow:0 8px 25px rgba(0,0,0,0.08);}
-    .page{display:none}
-    .page.active{display:block}
+    .page{
+        display:none;
+        opacity:0;
+        transform:translateX(20px);
+        -webkit-transform:translateX(20px);
+    }
+    .page.active{
+        display:block;
+        opacity:1;
+        transform:translateX(0);
+        -webkit-transform:translateX(0);
+        -webkit-transition:opacity 0.3s ease, transform 0.3s ease;
+        transition:opacity 0.3s ease, transform 0.3s ease;
+    }
+    .page.leaving{
+        opacity:0;
+        transform:translateX(-20px);
+        -webkit-transform:translateX(-20px);
+    }
     .btn{
         background:-webkit-linear-gradient(90deg,#4f46e5,#6366f1);
         background:linear-gradient(90deg,#4f46e5,#6366f1);
@@ -22,7 +39,8 @@
         appearance:none;
     }
     .btn:hover{-webkit-transform:translateY(-2px);transform:translateY(-2px);-webkit-box-shadow:0 4px 12px rgba(79,70,229,0.2);box-shadow:0 4px 12px rgba(79,70,229,0.2)}
-    .btn:disabled{background:#ccc;-webkit-transform:none;transform:none}
+    .btn:active{-webkit-transform:translateY(0);transform:translateY(0);-webkit-box-shadow:0 2px 6px rgba(79,70,229,0.15);box-shadow:0 2px 6px rgba(79,70,229,0.15)}
+    .btn:disabled{background:#ccc;-webkit-transform:none;transform:none;cursor:not-allowed}
     .question{margin:20px 0;padding:12px 0}
     .q-title{font-weight:bold;margin-bottom:12px;color:#222;font-size:15px;line-height:1.6}
     .options{
@@ -40,17 +58,23 @@
         -ms-flex:1;
         flex:1;
         text-align:center;
-        padding:9px 8px;
+        padding:11px 8px;
         border:1px solid #e0e0e0;
         border-radius:10px;
         cursor:pointer;
-        -webkit-transition:0.2s;
-        transition:0.2s;
+        -webkit-transition:all 0.2s ease;
+        transition:all 0.2s ease;
         background:#fafafa;
         margin:0 4px;
         /* 修复iOS点击高亮 */
         -webkit-tap-highlight-color:transparent;
         tap-highlight-color:transparent;
+        position:relative;
+        overflow:hidden;
+    }
+    .options label:active{
+        -webkit-transform:scale(0.96);
+        transform:scale(0.96);
     }
     .options input{display:none}
     .options input:checked+label{
@@ -284,7 +308,7 @@
 
 <script>
 // 正式20题 —— 完全按文档逐题还原
-const formalItems = [
+var formalItems = [
     "我很明了本测验的说明",
     "我有能力应付各种困难",
     "即使是关在铁笼里的猛兽，我见了也会惴惴不安",
@@ -306,7 +330,7 @@ const formalItems = [
     "我单独跟异性谈话时，总显得不自然",
     "我在待人接物方面，的确不太成功"
 ];
-const formalOptions = [
+var formalOptions = [
     ["A. 是的","B. 不一定","C. 不是的"],
     ["A. 是的","B. 不一定","C. 不是的"],
     ["A. 是的","B. 不一定","C. 不是的"],
@@ -328,56 +352,70 @@ const formalOptions = [
     ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
     ["A. 是的","B. 不完全这样","C. 不是的"]
 ];
-const formalEl = document.getElementById("formalQuestions");
-formalItems.forEach((item,i)=>{
-    const idx = i+1;
-    const opts = formalOptions[i];
-    const html = `
-    <div class="question">
-        <div class="q-title">${idx}. ${item}</div>
-        <div class="options">
-            <input type="radio" name="fq${idx}" id="fq${idx}_a" value="${opts[0]}"><label for="fq${idx}_a">${opts[0]}</label>
-            <input type="radio" name="fq${idx}" id="fq${idx}_b" value="${opts[1]}"><label for="fq${idx}_b">${opts[1]}</label>
-            <input type="radio" name="fq${idx}" id="fq${idx}_c" value="${opts[2]}"><label for="fq${idx}_c">${opts[2]}</label>
-        </div>
-    </div>`;
+var formalEl = document.getElementById("formalQuestions");
+for (var i = 0; i < formalItems.length; i++) {
+    var item = formalItems[i];
+    var idx = i + 1;
+    var opts = formalOptions[i];
+    var html = 
+    '<div class="question">' +
+        '<div class="q-title">' + idx + '. ' + item + '</div>' +
+        '<div class="options">' +
+            '<input type="radio" name="fq' + idx + '" id="fq' + idx + '_a" value="' + opts[0] + '"><label for="fq' + idx + '_a">' + opts[0] + '</label>' +
+            '<input type="radio" name="fq' + idx + '" id="fq' + idx + '_b" value="' + opts[1] + '"><label for="fq' + idx + '_b">' + opts[1] + '</label>' +
+            '<input type="radio" name="fq' + idx + '" id="fq' + idx + '_c" value="' + opts[2] + '"><label for="fq' + idx + '_c">' + opts[2] + '</label>' +
+        '</div>' +
+    '</div>';
     formalEl.innerHTML += html;
-});
+}
 
 // 分页逻辑
-let currentPage = 1;
+var currentPage = 1;
 function showPage(n){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-    document.getElementById("page"+n).classList.add("active");
-    currentPage = n;
+    var current = document.getElementById("page"+currentPage);
+    var next = document.getElementById("page"+n);
+    
+    if(current) {
+        current.classList.add("leaving");
+    }
+    
+    setTimeout(function(){
+        if(current) {
+            current.classList.remove("active", "leaving");
+        }
+        if(next) {
+            next.classList.add("active");
+        }
+        currentPage = n;
+    }, 300);
 }
 
 function nextPage(from){
     if(from === 1){
-        const c = document.querySelector('input[name="consent"]:checked');
+        var c = document.querySelector('input[name="consent"]:checked');
         if(!c){alert("请选择是否同意参加");return}
         if(c.value==="no"){alert("感谢关注，您已选择不参加");return}
         showPage(2);
     }
     if(from === 2){
-        const g = document.querySelector('input[name="gender"]:checked');
-        const a = document.getElementById("age").value;
-        const m = document.querySelector('input[name="major"]:checked');
-        const mb = document.querySelector('input[name="mbti"]:checked');
-        const b = document.querySelector('input[name="q_belief"]:checked');
-        const j = document.querySelector('input[name="judge"]:checked');
+        var g = document.querySelector('input[name="gender"]:checked');
+        var a = document.getElementById("age").value;
+        var m = document.querySelector('input[name="major"]:checked');
+        var mb = document.querySelector('input[name="mbti"]:checked');
+        var b = document.querySelector('input[name="q_belief"]:checked');
+        var j = document.querySelector('input[name="judge"]:checked');
         if(!g || !a || !m || !mb || !b || !j){alert("请完成所有基本信息");return}
         showPage(3);
     }
     if(from === 3){
-        let ok = true;
-        for(let i=1;i<=20;i++){
+        var ok = true;
+        for(var i=1;i<=20;i++){
             if(!document.querySelector('input[name="fq'+i+'"]:checked')) ok=false;
         }
         if(!ok){alert("请完成全部20道题目");return}
         showPage(4);
         // 加载延长到 2.5 秒（原2秒+0.5秒）
-        setTimeout(()=>{
+        setTimeout(function(){
             document.getElementById("loadingSection").style.display="none";
             document.getElementById("reportSection").style.display="block";
         },2500);
@@ -386,56 +424,62 @@ function nextPage(from){
         showPage(5);
     }
     if(from === 5){
-        const p1=document.querySelector('input[name="post1"]:checked');
-        const p2=document.querySelector('input[name="post2"]:checked');
-        const p3=document.querySelector('input[name="post3"]:checked');
-        const p4=document.querySelector('input[name="post4"]:checked');
+        var p1=document.querySelector('input[name="post1"]:checked');
+        var p2=document.querySelector('input[name="post2"]:checked');
+        var p3=document.querySelector('input[name="post3"]:checked');
+        var p4=document.querySelector('input[name="post4"]:checked');
         if(!p1||!p2||!p3||!p4){alert("请完成所有评价题目");return}
         showPage(6);
     }
 }
 
+// 兼容旧版浏览器的查询函数
+function getCheckedValue(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : '';
+}
+
 // 最终提交 + 自动收集所有数据
 function submitFinal(){
-    const dataAuth = document.querySelector('input[name="data"]:checked');
+    var dataAuth = document.querySelector('input[name="data"]:checked');
     if(!dataAuth){alert("请选择数据使用授权选项");return}
     
     // 基本信息
-    const gender = document.querySelector('input[name="gender"]:checked')?.value;
-    const age = document.getElementById("age").value;
-    const major = document.querySelector('input[name="major"]:checked')?.value;
-    const mbtiExp = document.querySelector('input[name="mbti"]:checked')?.value;
-    const beliefScore = document.querySelector('input[name="q_belief"]:checked')?.value;
-    const judgeType = document.querySelector('input[name="judge"]:checked')?.value;
+    var gender = getCheckedValue('gender');
+    var age = document.getElementById("age").value;
+    var major = getCheckedValue('major');
+    var mbtiExp = getCheckedValue('mbti');
+    var beliefScore = getCheckedValue('q_belief');
+    var judgeType = getCheckedValue('judge');
     
     // 后测赋分
-    const post1 = document.querySelector('input[name="post1"]:checked')?.value;
-    const post2 = document.querySelector('input[name="post2"]:checked')?.value;
-    const post3 = document.querySelector('input[name="post3"]:checked')?.value;
-    const post4 = document.querySelector('input[name="post4"]:checked')?.value;
+    var post1 = getCheckedValue('post1');
+    var post2 = getCheckedValue('post2');
+    var post3 = getCheckedValue('post3');
+    var post4 = getCheckedValue('post4');
     
     // 正式题答案
-    let formalAnswers = [];
-    for(let i=1;i<=20;i++){
-        formalAnswers.push(document.querySelector(`input[name="fq${i}"]:checked`)?.value);
+    var formalAnswers = [];
+    for(var i=1;i<=20;i++){
+        var el = document.querySelector('input[name="fq'+i+'"]:checked');
+        formalAnswers.push(el ? el.value : '');
     }
     
     // 组装数据
-    const result = `
-【FBTI实验数据】
-性别：${gender}
-年龄：${age}
-专业：${major}
-MBTI经验：${mbtiExp}
-测验信念分(1-5)：${beliefScore}
-判断倾向：${judgeType}
-后测1(准确性)：${post1}
-后测2(适用性)：${post2}
-后测3(独特性)：${post3}
-后测4(专属度)：${post4}
-数据授权：${dataAuth.value}
-正式题答案：${formalAnswers.join(' | ')}
-    `;
+    var result = 
+"【FBTI实验数据】\n" +
+"性别：" + gender + "\n" +
+"年龄：" + age + "\n" +
+"专业：" + major + "\n" +
+"MBTI经验：" + mbtiExp + "\n" +
+"测验信念分(1-5)：" + beliefScore + "\n" +
+"判断倾向：" + judgeType + "\n" +
+"后测1(准确性)：" + post1 + "\n" +
+"后测2(适用性)：" + post2 + "\n" +
+"后测3(独特性)：" + post3 + "\n" +
+"后测4(专属度)：" + post4 + "\n" +
+"数据授权：" + dataAuth.value + "\n" +
+"正式题答案：" + formalAnswers.join(' | ');
     
     document.getElementById("experimentData").innerText = result;
     document.getElementById("finalSubmitBtn").disabled = true;
@@ -443,14 +487,14 @@ MBTI经验：${mbtiExp}
     document.getElementById("dataPanel").style.display = "block";
 }
 
-// 复制数据（兼容Safari）
+// 复制数据（兼容Safari和旧版浏览器）
 function copyData(){
-    const text = document.getElementById("experimentData").innerText;
+    var text = document.getElementById("experimentData").innerText;
     // 兼容Safari剪贴板API
     if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(()=>{
+        navigator.clipboard.writeText(text).then(function() {
             alert("已复制到剪贴板，可直接粘贴到Excel/表格");
-        }).catch(err => {
+        }).catch(function(err) {
             fallbackCopyTextToClipboard(text);
         });
     } else {
@@ -460,7 +504,7 @@ function copyData(){
 
 // 剪贴板兼容降级方案
 function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement("textarea");
+    var textArea = document.createElement("textarea");
     textArea.value = text;
     // 定位到视口外避免闪烁
     textArea.style.position = "fixed";
@@ -477,8 +521,8 @@ function fallbackCopyTextToClipboard(text) {
     textArea.focus();
     textArea.select();
     try {
-        const successful = document.execCommand('copy');
-        const msg = successful ? "已复制到剪贴板，可直接粘贴到Excel/表格" : "复制失败，请手动复制";
+        var successful = document.execCommand('copy');
+        var msg = successful ? "已复制到剪贴板，可直接粘贴到Excel/表格" : "复制失败，请手动复制";
         alert(msg);
     } catch (err) {
         alert("复制失败，请手动复制数据");
