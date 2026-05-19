@@ -237,12 +237,102 @@
         -webkit-box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);
         box-shadow:inset 0 2px 4px rgba(0,0,0,0.03);
     }
+    .math-question {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        border-left: 5px solid #f59e0b;
+    }
+    .math-question .q-title {
+        font-size: 16px;
+        color: #92400e;
+        margin-bottom: 16px;
+    }
+    .math-question .options label {
+        background: white;
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+    .math-question .options input:checked+label {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-color: #f59e0b;
+        color: white;
+    }
+    .debriefing-section {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 20px;
+        border-left: 5px solid #22c55e;
+    }
+    .debriefing-section h3 {
+        color: #166534;
+        font-size: 18px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .debriefing-section p {
+        color: #14532d;
+        line-height: 1.8;
+        margin-bottom: 12px;
+    }
+    .debriefing-section strong {
+        color: #166534;
+    }
+    .debriefing-highlight {
+        background: rgba(34, 197, 94, 0.15);
+        padding: 16px;
+        border-radius: 12px;
+        margin: 16px 0;
+        border-left: 4px solid #22c55e;
+    }
+    .data-option {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        background: white;
+    }
+    .data-option:hover {
+        border-color: #9ca3af;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .data-option.selected-agree {
+        border-color: #22c55e;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        box-shadow: 0 3px 12px rgba(34, 197, 94, 0.2);
+    }
+    .data-option.selected-revoke {
+        border-color: #ef4444;
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        box-shadow: 0 3px 12px rgba(239, 68, 68, 0.2);
+    }
+    .btn:disabled{
+        background:#ccc;
+        -webkit-transform:none;
+        transform:none;
+        -webkit-box-shadow:none;
+        box-shadow:none;
+        cursor:not-allowed;
+        opacity: 0.7;
+    }
+    .btn:disabled:hover{
+        transform:none;
+        box-shadow:none;
+    }
 </style>
 </head>
 <body>
 <div class="container">
     <!-- 进度条 -->
-    <div class="progress-text" id="progressText">测评进度：1/3</div>
+    <div class="progress-text" id="progressText">测评进度：1/4</div>
     <div class="progress-container">
         <div class="progress-bar" id="progressBar"></div>
     </div>
@@ -269,8 +359,57 @@
     <button class="btn" onclick="nextPage(1)">下一步</button>
 </div>
 
-<!-- 2 基本信息 -->
+<!-- 2 认知反射测试（新增） -->
 <div class="page" id="page2">
+    <div class="title"><span class="emoji">🧮</span> 认知反射测试</div>
+    
+    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 16px; padding: 24px; margin-bottom: 28px; border-left: 5px solid #f59e0b; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);">
+        <p style="color: #92400e; font-weight: 500; font-size: 15px; line-height: 1.8; margin: 0;">
+            实验开始前，以下是一组简单的数学问题，请认真阅读并思考后作答。请尽量在最短时间内给出答案，但也要确保答案的准确性。请在作答时尽量避免过度思考和计算，而是依靠直觉和直觉反应来作答。
+        </p>
+    </div>
+    
+    <div style="background: white; border-radius: 14px; padding: 22px; margin-bottom: 20px; border: 2px solid #fde68a; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="font-weight: 600; color: #78350f; font-size: 16px; margin-bottom: 14px; line-height: 1.6;">
+            1. 球拍和球一共1.10美元，球拍比球贵1.00美元。球多少钱?
+        </div>
+        <div class="options">
+            <input type="radio" name="crt1" id="crt1_a" value="A">
+            <label for="crt1_a">A 0.10美元</label>
+            <input type="radio" name="crt1" id="crt1_b" value="B">
+            <label for="crt1_b">B 0.05美元</label>
+        </div>
+    </div>
+    
+    <div style="background: white; border-radius: 14px; padding: 22px; margin-bottom: 20px; border: 2px solid #fde68a; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="font-weight: 600; color: #78350f; font-size: 16px; margin-bottom: 14px; line-height: 1.6;">
+            2. 5台机器5分钟生产5个零件，100台机器生产100个零件需要多少分钟?
+        </div>
+        <div class="options">
+            <input type="radio" name="crt2" id="crt2_a" value="A">
+            <label for="crt2_a">A 5分钟</label>
+            <input type="radio" name="crt2" id="crt2_b" value="B">
+            <label for="crt2_b">B 100分钟</label>
+        </div>
+    </div>
+    
+    <div style="background: white; border-radius: 14px; padding: 22px; margin-bottom: 28px; border: 2px solid #fde68a; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="font-weight: 600; color: #78350f; font-size: 16px; margin-bottom: 14px; line-height: 1.6;">
+            3. 池塘里的荷叶每天覆盖面积翻倍，48天覆盖整个池塘，覆盖一半需要多少天?
+        </div>
+        <div class="options">
+            <input type="radio" name="crt3" id="crt3_a" value="A">
+            <label for="crt3_a">A 47天</label>
+            <input type="radio" name="crt3" id="crt3_b" value="B">
+            <label for="crt3_b">B 24天</label>
+        </div>
+    </div>
+    
+    <button class="btn" onclick="nextPage(2)">下一步</button>
+</div>
+
+<!-- 3 基本信息 -->
+<div class="page" id="page3">
     <div class="title"><span class="emoji">📋</span> 基本信息</div>
     <div class="question">
         <div class="q-title">1. 性别</div>
@@ -315,18 +454,18 @@
             <input type="radio" name="judge" id="j2" value="逻辑分析"><label for="j2">🧠 靠逻辑与分析</label>
         </div>
     </div>
-    <button class="btn" onclick="nextPage(2)">下一步</button>
+    <button class="btn" onclick="nextPage(3)">下一步</button>
 </div>
 
-<!-- 3 正式20题（完全按文档还原） -->
-<div class="page" id="page3">
+<!-- 4 正式20题 -->
+<div class="page" id="page4">
     <div class="title"><span class="emoji">🧩</span> FBTI 人格测试</div>
     <div id="formalQuestions"></div>
-    <button class="btn" onclick="nextPage(3)">提交问卷，生成报告</button>
+    <button class="btn" onclick="nextPage(4)">提交问卷，生成报告</button>
 </div>
 
-<!-- 4 加载 + 报告 -->
-<div class="page" id="page4">
+<!-- 5 加载 + 报告 -->
+<div class="page" id="page5">
     <div class="loading" id="loadingSection">
         <div class="spinner"></div>
         <p>系统正在根据您的答案分析……</p>
@@ -334,15 +473,43 @@
     </div>
     <div id="reportSection" style="display:none">
         <div class="title"><span class="emoji">📊</span> 您的 FBTI 专属分析报告</div>
-        <div class="report">
-            你祈求受到他人喜爱却对自己吹毛求疵。虽然人格有些缺陷，大体而言你都有办法弥补。你拥有可观的未开发潜能尚未就你的长处发挥。看似强硬、严格自律的外在掩盖着不安与忧虑的内心。许多时候，你严重的质疑自己是否做了对的事情或正确的决定。你喜欢一定程度的变动并在受限时感到不满。你为自己是独立思想者自豪并且不会接受没有充分证据的言论。但你认为对他人过度坦率是不明智的。有些时候你外向、亲和、充满社会性，有些时候你却内向、谨慎而沉默。你的一些抱负是不切实际的。
+        <div class="report" style="padding: 30px 28px;">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="background: #f8fafc; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #6366f1;">
+                    <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.9;">🤝 你祈求受到他人喜爱，却对自己吹毛求疵。</p>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #6366f1;">
+                    <p style="margin: 0 0 6px 0; color: #6366f1; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">自我认知</p>
+                    <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.9;">虽然人格有些缺陷，大体而言你都有办法弥补。你拥有可观的未开发潜能，尚未就你的长处发挥。</p>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #6366f1;">
+                    <p style="margin: 0 0 6px 0; color: #6366f1; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">外在表现</p>
+                    <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.9;">看似强硬、严格自律的外在，掩盖着不安与忧虑的内心。许多时候，你严重质疑自己是否做了对的事情或正确的决定。</p>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #6366f1;">
+                    <p style="margin: 0 0 6px 0; color: #6366f1; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">思维特质</p>
+                    <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.9;">你喜欢一定程度的变动，并在受限时感到不满。你为自己是独立思想者自豪，并且不会接受没有充分证据的言论。但你认为对他人过度坦率是不明智的。</p>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #6366f1;">
+                    <p style="margin: 0 0 6px 0; color: #6366f1; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">社交风格</p>
+                    <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.9;">有些时候你外向、亲和、充满社会性，有些时候你却内向、谨慎而沉默。</p>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #6366f1;">
+                    <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.9;">🌟 你的一些抱负是不切实际的。</p>
+                </div>
+            </div>
         </div>
-        <button class="btn" onclick="nextPage(4)">下一步：填写评价</button>
+        <button class="btn" onclick="nextPage(5)">下一步：填写评价</button>
     </div>
 </div>
 
-<!-- 5 后测（赋分+完整文本） -->
-<div class="page" id="page5">
+<!-- 6 后测 -->
+<div class="page" id="page6">
     <div class="title"><span class="emoji">⭐</span> 报告评价</div>
     <p class="tip">1=完全不准确/不适用/不独特/不是专门生成 | 5=非常准确/适用/独特/专门生成</p>
     <div class="question">
@@ -385,33 +552,64 @@
             <input type="radio" name="post4" id="pppp5" value="5"><label for="pppp5">5</label>
         </div>
     </div>
-    <button class="btn" onclick="nextPage(5)">继续</button>
+    <button class="btn" onclick="nextPage(6)">继续</button>
 </div>
 
-<!-- 6 揭秘 + 数据提交 + 数据面板 -->
-<div class="page" id="page6">
+<!-- 7 揭秘 + 数据提交 + 数据面板 -->
+<div class="page" id="page7">
     <div class="title"><span class="emoji">🔍</span> 实验揭秘与感谢</div>
-    <p style="line-height:1.8">🎉 感谢您完成实验！</p>
-    <p style="line-height:1.8">本次实验是对 Forer（1949）巴纳姆效应 的经典重复。</p>
-    <p style="line-height:1.8">您收到的性格报告并非根据您的答案定制，而是标准巴纳姆陈述，所有参与者完全相同，并非来自卡特尔16PF或您的答案。本实验仅用于教学，不做任何真实人格评估，请不要用这份报告评价自己，该段描述也不具人格诊断价值。</p>
-    <p style="line-height:1.8"><strong>巴纳姆效应：</strong>人们倾向于将模糊、通用、适用于大多数人的描述，误认为是精准、专属、只针对自己的性格分析。</p>
-
-    <div class="question" style="margin-top:30px">
-        <div class="q-title">📤 数据使用授权</div>
-        <div class="options">
-            <input type="radio" name="data" id="data1" value="同意">
-            <label for="data1">✅ 我理解实验真相，同意数据用于研究</label>
-            <input type="radio" name="data" id="data2" value="撤回">
-            <label for="data2">❌ 我理解实验真相，撤回数据（不纳入分析）</label>
+    
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 18px; padding: 30px; margin-bottom: 25px; border-left: 5px solid #22c55e; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15);">
+        <div style="font-size: 18px; font-weight: 600; color: #166534; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed #86efac; display: flex; align-items: center; gap: 10px;">
+            <span>📝</span> 3. 事后解释（Debriefing，严格对应 Forer 实验真相）
+        </div>
+        
+        <div style="text-align: center; padding: 25px 0; margin-bottom: 20px; background: rgba(255,255,255,0.6); border-radius: 12px;">
+            <span style="font-size: 40px;">🎉</span>
+            <p style="font-size: 20px; font-weight: 600; color: #15803d; margin-top: 12px;">感谢您完成实验！</p>
+        </div>
+        
+        <div style="color: #14532d; line-height: 1.8; font-size: 15px;">
+            <p style="margin-bottom: 16px;">本次实验是对 <strong style="color: #166534;">认知反射测试</strong>、<strong style="color: #166534;">Forer（1949）巴纳姆效应</strong> 的经典重复。</p>
+            
+            <p style="margin-bottom: 16px;">您收到的性格报告 <strong style="color: #b91c1c;">并非根据您的答案定制</strong>，而是标准巴纳姆陈述，所有参与者完全相同，并非来自卡特尔 16PF 或您的答案。我们想探究直觉反应与人格测试信任度的关系。本实验仅用于教学，不做任何真实人格评估，请不要用这份报告评价自己，该段描述也不具人格诊断价值。</p>
+            
+            <div style="background: rgba(34, 197, 94, 0.15); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #22c55e;">
+                <p style="margin: 0; font-weight: 500;">
+                    <strong style="color: #166534;">巴纳姆效应：</strong>人们倾向于将 
+                    <span style="color: #ef4444; font-weight: 600;">模糊、通用、适用于大多数人</span> 的描述，
+                    误认为是 
+                    <span style="color: #22c55e; font-weight: 600;">精准、专属、只针对自己</span> 的性格分析。
+                </p>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.7); padding: 24px; border-radius: 14px; margin-top: 20px; border: 2px solid #86efac;">
+                <p style="margin: 0 0 16px 0; color: #166534; font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">📤</span> <strong>数据使用授权</strong>
+                </p>
+                <p style="margin: 0 0 18px 0; font-size: 14px; color: #14532d;">你的数据将匿名用于教学研究，请选择：</p>
+                <div class="data-options" style="display: flex; flex-direction: column; gap: 12px;">
+                    <label class="data-option" style="display: flex; align-items: center; padding: 16px 20px; border: 2px solid #d1d5db; border-radius: 12px; cursor: pointer; transition: all 0.25s ease; background: white;">
+                        <input type="radio" name="data" id="data1" value="同意" onchange="updateDataOptionStyle()" style="width: 20px; height: 20px; margin-right: 14px; accent-color: #22c55e;">
+                        <span style="font-size: 15px; color: #374151; font-weight: 500;">✅ 我理解实验真相，同意数据用于研究</span>
+                    </label>
+                    <label class="data-option" style="display: flex; align-items: center; padding: 16px 20px; border: 2px solid #d1d5db; border-radius: 12px; cursor: pointer; transition: all 0.25s ease; background: white;">
+                        <input type="radio" name="data" id="data2" value="撤回" onchange="updateDataOptionStyle()" style="width: 20px; height: 20px; margin-right: 14px; accent-color: #ef4444;">
+                        <span style="font-size: 15px; color: #374151; font-weight: 500;">❌ 我理解实验真相，撤回数据（不纳入分析）</span>
+                    </label>
+                </div>
+            </div>
+            
+            <p style="margin-top: 20px; text-align: center; font-weight: 600; color: #15803d; font-size: 16px;">再次感谢你的参与！</p>
         </div>
     </div>
 
-    <button class="btn" id="finalSubmitBtn" onclick="submitFinal()">提交完成</button>
+    <button class="btn" id="finalSubmitBtn" onclick="submitFinal()" disabled>提交完成</button>
     <p id="finishTip" style="margin-top:20px;text-align:center;font-weight:bold;color:#10b981;display:none">
         ✅ 提交成功！
     </p>
 
-    <!-- 主试数据收集面板（自动赋分+一键复制） -->
+    <!-- 主试数据收集面板 -->
     <div id="dataPanel" style="display:none;margin-top:30px">
         <h3>📊 实验数据（主试专用）</h3>
         <div class="data-box" id="experimentData"></div>
@@ -422,7 +620,7 @@
 </div>
 
 <script>
-// 正式20题 —— 完全按文档逐题还原
+// 正式20题
 var formalItems = [
     "我很明了本测验的说明",
     "我有能力应付各种困难",
@@ -467,12 +665,11 @@ var formalOptions = [
     ["A. 是的","B. 介于 A、C 之间","C. 不是的"],
     ["A. 是的","B. 不完全这样","C. 不是的"]
 ];
-// 延迟初始化正式题目，避免阻塞页面加载
+
 function initFormalQuestions() {
     var formalEl = document.getElementById("formalQuestions");
     if (!formalEl) return;
     
-    // 使用DocumentFragment优化DOM操作
     var fragment = document.createDocumentFragment();
     
     for (var i = 0; i < formalItems.length; i++) {
@@ -515,8 +712,11 @@ function showPage(n){
         }
         currentPage = n;
         
-        // 更新进度条（只在等待页之前显示）
         updateProgress(n);
+        
+        if(n === 7){
+            updateDataOptionStyle();
+        }
     }, 300);
 }
 
@@ -525,25 +725,20 @@ function updateProgress(pageNum){
     var progressText = document.getElementById("progressText");
     var progressBar = document.getElementById("progressBar");
     
-    // 总共3个步骤：知情同意、基本信息、正式测试
-    var totalSteps = 3;
+    var totalSteps = 4;
     var currentStep = Math.min(pageNum, totalSteps);
     
-    // 更新进度百分比
     var percentage = (currentStep / totalSteps) * 100;
     
-    // 更新进度条
     if(progressBar) {
         progressBar.style.width = percentage + "%";
     }
     
-    // 更新进度文字
     if(progressText) {
         progressText.textContent = "测评进度：" + currentStep + "/" + totalSteps;
     }
     
-    // 在等待页和结果页隐藏进度条
-    if(pageNum >= 4){
+    if(pageNum >= 5){
         if(progressText) progressText.style.display = "none";
         if(document.querySelector(".progress-container")) document.querySelector(".progress-container").style.display = "none";
     } else {
@@ -560,6 +755,13 @@ function nextPage(from){
         showPage(2);
     }
     if(from === 2){
+        var c1 = document.querySelector('input[name="crt1"]:checked');
+        var c2 = document.querySelector('input[name="crt2"]:checked');
+        var c3 = document.querySelector('input[name="crt3"]:checked');
+        if(!c1 || !c2 || !c3){alert("请完成所有认知反射测试题");return}
+        showPage(3);
+    }
+    if(from === 3){
         var g = document.querySelector('input[name="gender"]:checked');
         var a = document.getElementById("age").value;
         var m = document.querySelector('input[name="major"]:checked');
@@ -567,58 +769,76 @@ function nextPage(from){
         var b = document.querySelector('input[name="q_belief"]:checked');
         var j = document.querySelector('input[name="judge"]:checked');
         if(!g || !a || !m || !mb || !b || !j){alert("请完成所有基本信息");return}
-        showPage(3);
+        showPage(4);
     }
-    if(from === 3){
+    if(from === 4){
         var ok = true;
         for(var i=1;i<=20;i++){
             if(!document.querySelector('input[name="fq'+i+'"]:checked')) ok=false;
         }
         if(!ok){alert("请完成全部20道题目");return}
-        showPage(4);
-        // 加载延长到 2.5 秒（原2秒+0.5秒）
+        showPage(5);
         setTimeout(function(){
             var loadingSection = document.getElementById("loadingSection");
             var reportSection = document.getElementById("reportSection");
             
-            // 先淡出加载页
             loadingSection.classList.add("fade-out");
             
-            // 等待淡出完成后，显示报告页并淡入
             setTimeout(function(){
                 loadingSection.style.display="none";
                 reportSection.style.display="block";
-                // 强制重绘，确保过渡效果生效
                 reportSection.offsetHeight;
                 reportSection.classList.add("show");
             }, 400);
         },2500);
     }
-    if(from === 4){
-        showPage(5);
-    }
     if(from === 5){
+        showPage(6);
+    }
+    if(from === 6){
         var p1=document.querySelector('input[name="post1"]:checked');
         var p2=document.querySelector('input[name="post2"]:checked');
         var p3=document.querySelector('input[name="post3"]:checked');
         var p4=document.querySelector('input[name="post4"]:checked');
         if(!p1||!p2||!p3||!p4){alert("请完成所有评价题目");return}
-        showPage(6);
+        showPage(7);
     }
 }
 
-// 兼容旧版浏览器的查询函数
 function getCheckedValue(name) {
     var el = document.querySelector('input[name="' + name + '"]:checked');
     return el ? el.value : '';
 }
 
-// 最终提交 + 自动收集所有数据
+function updateDataOptionStyle(){
+    var data1 = document.getElementById('data1');
+    var data2 = document.getElementById('data2');
+    var submitBtn = document.getElementById('finalSubmitBtn');
+    var options = document.querySelectorAll('.data-option');
+    
+    options.forEach(function(opt) {
+        opt.classList.remove('selected-agree', 'selected-revoke');
+    });
+    
+    if(data1 && data1.checked){
+        if(data1.parentElement){
+            data1.parentElement.classList.add('selected-agree');
+        }
+        submitBtn.disabled = false;
+    } else if(data2 && data2.checked){
+        if(data2.parentElement){
+            data2.parentElement.classList.add('selected-revoke');
+        }
+        submitBtn.disabled = false;
+    } else {
+        submitBtn.disabled = true;
+    }
+}
+
 function submitFinal(){
     var dataAuth = document.querySelector('input[name="data"]:checked');
     if(!dataAuth){alert("请选择数据使用授权选项");return}
     
-    // 基本信息
     var gender = getCheckedValue('gender');
     var age = document.getElementById("age").value;
     var major = getCheckedValue('major');
@@ -626,20 +846,21 @@ function submitFinal(){
     var beliefScore = getCheckedValue('q_belief');
     var judgeType = getCheckedValue('judge');
     
-    // 后测赋分
+    var crt1 = getCheckedValue('crt1');
+    var crt2 = getCheckedValue('crt2');
+    var crt3 = getCheckedValue('crt3');
+    
     var post1 = getCheckedValue('post1');
     var post2 = getCheckedValue('post2');
     var post3 = getCheckedValue('post3');
     var post4 = getCheckedValue('post4');
     
-    // 正式题答案
     var formalAnswers = [];
     for(var i=1;i<=20;i++){
         var el = document.querySelector('input[name="fq'+i+'"]:checked');
         formalAnswers.push(el ? el.value : '');
     }
     
-    // 组装数据
     var result = 
 "【FBTI实验数据】\n" +
 "性别：" + gender + "\n" +
@@ -648,6 +869,9 @@ function submitFinal(){
 "MBTI经验：" + mbtiExp + "\n" +
 "测验信念分(1-5)：" + beliefScore + "\n" +
 "判断倾向：" + judgeType + "\n" +
+"认知反射测试1：" + crt1 + "\n" +
+"认知反射测试2：" + crt2 + "\n" +
+"认知反射测试3：" + crt3 + "\n" +
 "后测1(准确性)：" + post1 + "\n" +
 "后测2(适用性)：" + post2 + "\n" +
 "后测3(独特性)：" + post3 + "\n" +
@@ -661,10 +885,8 @@ function submitFinal(){
     document.getElementById("dataPanel").style.display = "block";
 }
 
-// 复制数据（兼容Safari和旧版浏览器）
 function copyData(){
     var text = document.getElementById("experimentData").innerText;
-    // 兼容Safari剪贴板API
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(function() {
             alert("已复制到剪贴板，可直接粘贴到Excel/表格");
@@ -676,11 +898,9 @@ function copyData(){
     }
 }
 
-// 剪贴板兼容降级方案
 function fallbackCopyTextToClipboard(text) {
     var textArea = document.createElement("textarea");
     textArea.value = text;
-    // 定位到视口外避免闪烁
     textArea.style.position = "fixed";
     textArea.style.top = "0";
     textArea.style.left = "0";
@@ -704,21 +924,18 @@ function fallbackCopyTextToClipboard(text) {
     document.body.removeChild(textArea);
 }
 
-// 页面加载完成后初始化
 window.addEventListener('load', function(){
     var progressBar = document.getElementById("progressBar");
     var progressText = document.getElementById("progressText");
     
     if(progressBar) {
-        // 初始进度：第1页（知情同意）
-        progressBar.style.width = "33.33%";
+        progressBar.style.width = "25%";
     }
     
     if(progressText) {
-        progressText.textContent = "测评进度：1/3";
+        progressText.textContent = "测评进度：1/4";
     }
     
-    // 延迟初始化正式题目，让页面先渲染完成
     setTimeout(function() {
         initFormalQuestions();
     }, 100);
